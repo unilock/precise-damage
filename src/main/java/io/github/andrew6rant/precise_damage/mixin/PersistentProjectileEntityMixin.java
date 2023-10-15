@@ -7,6 +7,7 @@ import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.math.MathHelper;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
@@ -18,6 +19,7 @@ public abstract class PersistentProjectileEntityMixin {
     @Shadow
     private double damage;
 
+    @Unique
     private double damage_calc = 0.0F;
 
     // store damage value as double instead of int i
@@ -28,7 +30,7 @@ public abstract class PersistentProjectileEntityMixin {
 
     // store crit damage value
     @Inject(method = "onEntityHit", at = @At(value = "INVOKE", target = "Ljava/lang/Math;min(JJ)J"), locals = LocalCapture.CAPTURE_FAILHARD)
-    private void storeCritDamage(EntityHitResult entityHitResult, CallbackInfo ci, Entity entity, float f, int i, long l) {
+    private void storeCritDamage(EntityHitResult entityHitResult, CallbackInfo ci, Entity entity, int i, long l) {
         damage_calc = Math.min(l + damage_calc, 2147483647L);
     }
 
