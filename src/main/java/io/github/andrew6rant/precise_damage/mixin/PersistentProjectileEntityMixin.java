@@ -1,5 +1,7 @@
 package io.github.andrew6rant.precise_damage.mixin;
 
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
@@ -10,7 +12,6 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
@@ -30,13 +31,13 @@ public abstract class PersistentProjectileEntityMixin {
 
     // store crit damage value
     @Inject(method = "onEntityHit", at = @At(value = "INVOKE", target = "Ljava/lang/Math;min(JJ)J"), locals = LocalCapture.CAPTURE_FAILHARD)
-    private void storeCritDamage(EntityHitResult entityHitResult, CallbackInfo ci, Entity entity, int i, long l) {
+    private void storeCritDamage(EntityHitResult entityHitResult, CallbackInfo ci, Entity entity, float f, int i, long l) {
         damage_calc = Math.min(l + damage_calc, 2147483647L);
     }
 
     // apply precise damage value
-    @Redirect(method = "onEntityHit", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/Entity;damage(Lnet/minecraft/entity/damage/DamageSource;F)Z"))
-    private boolean applyArmorToDamage(Entity entity, DamageSource damageSource, float amount) {
-        return entity.damage(damageSource, (float)damage_calc);
+    @WrapOperation(method = "onEntityHit", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/Entity;damage(Lnet/minecraft/entity/damage/DamageSource;F)Z"))
+    private boolean applyArmorToDamage(Entity instance, DamageSource source, float amount, Operation<Boolean> original) {
+        return original.call(instance, source, (float) damage_calc);
     }
 }
