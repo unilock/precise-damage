@@ -7,6 +7,9 @@
   "authors": [
     "Andrew6rant (Andrew Grant)"
   ],
+  "contributors": [
+    "unilock"
+  ],
   "contact": {
     "homepage": "https://www.curseforge.com/minecraft/mc-mods/precise-damage",
     "sources": "https://github.com/Andrew6rant/precise-damage/tree/api",
